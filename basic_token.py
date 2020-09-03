@@ -1,5 +1,5 @@
 import copy
-from typing import TypeVar, Generic
+from typing import Optional
 
 
 class Token:
@@ -25,7 +25,7 @@ class Tokens:
         else:
             return None
 
-    def pop_token(self) -> Token:
+    def pop_token(self) -> Optional[Token]:
         if self.token_ptr < len(self.tokens):
             token = self.tokens[self.token_ptr]
             self.token_ptr += 1

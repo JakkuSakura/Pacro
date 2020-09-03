@@ -38,7 +38,7 @@ config_block = [config_comment (line) ] +
 code_block = [code_comment (line) ] +
 
 line = char * newline
-char_block = *
+text_block = line +
 
 
 ```

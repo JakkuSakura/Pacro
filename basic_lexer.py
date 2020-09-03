@@ -1,3 +1,5 @@
+from typing import List
+
 from basic_token import Token, Tokens
 from lexer_config import *
 import token_types
@@ -6,7 +8,7 @@ from tools import is_prefix, equals
 
 class BasicLexer:
     def __init__(self):
-        self.buf: list = []
+        self.buf: List[str] = []
         # self.buf_ptr: int = 0
         self.tokens = Tokens()
         self.col = 1
@@ -33,6 +35,7 @@ class BasicLexer:
     def push(self, s: str):
         self.buf.extend(s)
 
+    # noinspection PyShadowingBuiltins
     def new_token(self, type: str, content):
         self.tokens.append(Token(row=self.row, col=self.col, type=type, content=content))
 
@@ -68,7 +71,7 @@ class BasicLexer:
         return t
 
 
-if __name__ == '__main__':
+def main():
     lexer = BasicLexer()
     lexer.replace('''//% Lang: Python
 //$ code("int foo(){}");
@@ -79,3 +82,7 @@ int main() {
     tokens = lexer.take_tokens()
     while token := tokens.pop_token():
         print(token)
+
+
+if __name__ == '__main__':
+    main()
