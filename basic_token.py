@@ -1,4 +1,7 @@
 import copy
+from typing import TypeVar, Generic
+
+
 class Token:
     def __init__(self, *args, **kwargs):
         self.row = kwargs['row']
@@ -22,7 +25,7 @@ class Tokens:
         else:
             return None
 
-    def pop_token(self):
+    def pop_token(self) -> Token:
         if self.token_ptr < len(self.tokens):
             token = self.tokens[self.token_ptr]
             self.token_ptr += 1
@@ -44,9 +47,9 @@ class Tokens:
     def append(self, token: Token):
         assert self.token_ptr == 0, "You should not append tokens after starting reading"
         self.tokens.append(token)
-        
-    def clone(self):
+
+    def clone(self) -> 'Tokens':
         return copy.copy(self)
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return len(self.tokens) == 0

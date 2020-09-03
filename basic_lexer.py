@@ -1,39 +1,7 @@
 from basic_token import Token, Tokens
 from lexer_config import *
-
-
-def prefix(a: list, b):
-    '''
-        :param a: char list
-        :param b: str or list of str
-        :return: true if a is prefix of b or x (x in b)
-        '''
-    if isinstance(b, str):
-        if len(a) > len(b):
-            return False
-        for i in range(len(a)):
-            if a[i] != b[i]:
-                return False
-        return True
-
-    elif isinstance(b, list):
-        for x in b:
-            if prefix(a, x):
-                return True
-
-
-def compare(a: list, b):
-    '''
-    :param a: char list
-    :param b: str or list of str
-    :return: true if a == b, or a == x (x in b)
-    '''
-    if isinstance(b, str):
-        return a == list(b)
-    elif isinstance(b, list):
-        for x in b:
-            if compare(a, x):
-                return True
+import token_types
+from tools import is_prefix, equals
 
 
 class BasicLexer:
@@ -74,27 +42,27 @@ class BasicLexer:
         temp_buf = []
         for ch in self.buf:
             temp_buf.append(ch)
-            if prefix(temp_buf, [config_comment, code_comment, newline]):
-                if compare(temp_buf, config_comment):
-                    self.new_token(type='config_comment', content=''.join(temp_buf))
+            if is_prefix(temp_buf, [config_comment, code_comment, newline]):
+                if equals(temp_buf, config_comment):
+                    self.new_token(type=token_types.config_comment, content=''.join(temp_buf))
                     temp_buf.clear()
-                elif compare(temp_buf, code_comment):
-                    self.new_token(type='code_comment', content=''.join(temp_buf))
+                elif equals(temp_buf, code_comment):
+                    self.new_token(type=token_types.code_comment, content=''.join(temp_buf))
                     temp_buf.clear()
-                elif compare(temp_buf, newline):
-                    self.new_token(type='newline', content=''.join(temp_buf))
+                elif equals(temp_buf, newline):
+                    self.new_token(type=token_types.newline, content=''.join(temp_buf))
                     temp_buf.clear()
 
             else:
-                self.new_token(type='char', content=ch)
+                self.new_token(type=token_types.char, content=ch)
                 temp_buf.clear()
 
             self.process(ch)
 
-    def get_tokens(self):
+    def get_tokens(self) -> Tokens:
         return self.tokens.clone()
 
-    def take_tokens(self):
+    def take_tokens(self) -> Tokens:
         t = self.tokens
         self.tokens = Tokens()
         return t
@@ -108,6 +76,6 @@ int main() {
 
 }''')
     lexer.do_lexer()
-    tokens = lexer.get_tokens()
+    tokens = lexer.take_tokens()
     while token := tokens.pop_token():
         print(token)

@@ -30,3 +30,20 @@ code_comment = '//$'
 newline = ['\r\n', '\n']
 char = *
 ```
+
+## Parser
+```text
+
+config_block = [config_comment (line) ] +
+code_block = [code_comment (line) ] +
+
+line = char * newline
+char_block = *
+
+
+```
+
+## TODO
+- [ ] Macro function call `macro_fun(example)` or `macro_fun!(example)`
+
+
