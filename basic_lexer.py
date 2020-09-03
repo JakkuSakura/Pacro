@@ -79,9 +79,11 @@ int main() {
 
 }''')
     lexer.do_lexer()
-    tokens = lexer.take_tokens()
+    tokens = lexer.get_tokens()
     while token := tokens.pop_token():
         print(token)
+
+    return lexer.take_tokens()
 
 
 if __name__ == '__main__':
