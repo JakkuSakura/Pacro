@@ -1,7 +1,10 @@
-def is_prefix(a: list, b) -> bool:
+from typing import Union, List
+
+
+def is_prefix(a: List[str], b: Union[str, List[str]]) -> bool:
     '''
-        :param a: char list
-        :param b: str or list of str
+        :param a: List[str], List[char] actually
+        :param b: str or list of str (it actually supports recursion)
         :return: true if a is prefix of b or x (x in b)
         '''
     if isinstance(b, str):
@@ -16,12 +19,15 @@ def is_prefix(a: list, b) -> bool:
         for x in b:
             if is_prefix(a, x):
                 return True
+        return False
+    else:
+        raise TypeError()
 
 
-def equals(a: list, b) -> bool:
+def equals(a: List[str], b: Union[str, List[str]]) -> bool:
     '''
-    :param a: char list
-    :param b: str or list of str
+    :param a: List[str], List[char] actually
+    :param b: str or list of str (it actually supports recursion)
     :return: true if a == b, or a == x (x in b)
     '''
     if isinstance(b, str):
@@ -30,3 +36,6 @@ def equals(a: list, b) -> bool:
         for x in b:
             if equals(a, x):
                 return True
+        return False
+    else:
+        raise TypeError()
