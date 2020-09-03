@@ -1,4 +1,4 @@
-from basic_token import Token
+from basic_token import Token, Tokens
 from lexer_config import *
 
 
@@ -39,9 +39,8 @@ def compare(a: list, b):
 class BasicLexer:
     def __init__(self):
         self.buf: list = []
-        self.buf_ptr: int = 0
-        self.tokens: list = []
-        self.token_ptr: int = 0
+        # self.buf_ptr: int = 0
+        self.tokens = Tokens()
         self.col = 1
         self.row = 1
 
@@ -54,9 +53,8 @@ class BasicLexer:
 
     def reset(self):
         self.buf.clear()
-        self.buf_ptr = 0
+        # self.buf_ptr = 0
         self.tokens.clear()
-        self.token_ptr = 0
         self.col = 0
         self.row = 1
 
@@ -71,6 +69,8 @@ class BasicLexer:
         self.tokens.append(Token(row=self.row, col=self.col, type=type, content=content))
 
     def do_lexer(self):
+        assert self.tokens.is_empty(), "You should not call do_lexer() twice on the same lexer object"
+
         temp_buf = []
         for ch in self.buf:
             temp_buf.append(ch)
@@ -91,26 +91,13 @@ class BasicLexer:
 
             self.process(ch)
 
-    def peek_token(self):
-        if self.token_ptr < len(self.tokens):
-            return self.tokens[self.token_ptr]
-        else:
-            return None
+    def get_tokens(self):
+        return self.tokens.clone()
 
-    def pop_token(self):
-        if self.token_ptr < len(self.tokens):
-            token = self.tokens[self.token_ptr]
-            self.token_ptr += 1
-            return token
-        else:
-            return None
-
-    def push_back_token(self, token: Token):
-        if self.token_ptr < 0:
-            raise Exception(f"Cannot push back token: token_ptr={self.token_ptr}")
-
-        self.token_ptr -= 1
-        self.tokens[self.token_ptr] = token
+    def take_tokens(self):
+        t = self.tokens
+        self.tokens = Tokens()
+        return t
 
 
 if __name__ == '__main__':
@@ -121,5 +108,6 @@ int main() {
 
 }''')
     lexer.do_lexer()
-    while token := lexer.pop_token():
+    tokens = lexer.get_tokens()
+    while token := tokens.pop_token():
         print(token)
