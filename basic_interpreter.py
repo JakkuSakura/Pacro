@@ -48,7 +48,7 @@ class BasicInterpreter:
 
 def main():
     interpreter = BasicInterpreter()
-    root = basic_parser.main()
+    root = basic_parser.main(mute=True)
     interpreter.do_interpret(root)
 
 

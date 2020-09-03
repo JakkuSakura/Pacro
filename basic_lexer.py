@@ -71,7 +71,7 @@ class BasicLexer:
         return t
 
 
-def main():
+def main(mute=False):
     lexer = BasicLexer()
     lexer.replace('''//% Lang: Python
 //$ code("int foo(){}");
@@ -79,9 +79,10 @@ int main() {
 
 }''')
     lexer.do_lexer()
-    tokens = lexer.get_tokens()
-    while token := tokens.pop_token():
-        print(token)
+    if not mute:
+        tokens = lexer.get_tokens()
+        while token := tokens.pop_token():
+            print(token)
 
     return lexer.take_tokens()
 

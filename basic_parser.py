@@ -80,12 +80,13 @@ class BasicParser:
         return root_node
 
 
-def main():
+def main(mute=False):
     parser = BasicParser()
-    parser.set_tokens(basic_lexer.main())
+    parser.set_tokens(basic_lexer.main(mute=True))
     root = parser.do_parse()
-    for node in root:
-        print(node)
+    if not mute:
+        for node in root:
+            print(node)
     return root
 
 
