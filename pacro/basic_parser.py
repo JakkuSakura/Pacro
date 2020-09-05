@@ -84,8 +84,7 @@ class BasicParser:
 
 def main(mute=False):
     parser = BasicParser()
-    parser.set_tokens(basic_lexer.main(mute=True))
-    root = parser.do_parse()
+    root = parser.do_parse(basic_lexer.main(mute=True))
     if not mute:
         for node in root:
             print(node)

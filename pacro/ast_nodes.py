@@ -4,7 +4,6 @@ from lexer_token import Token
 
 
 class AstNode:
-
     def __init__(self):
         pass
 

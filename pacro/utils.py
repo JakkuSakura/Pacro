@@ -1,12 +1,14 @@
+import os
+import sys
 from typing import Union, List
 
 
-def is_prefix(a: List[str], b: Union[str, List[str]]) -> bool:
+def is_prefix(a: List[str], b: Union[str, List[str], List[List[str]]]) -> bool:
     '''
         :param a: List[str], List[char] actually
         :param b: str or list of str (it actually supports recursion)
         :return: true if a is prefix of b or x (x in b)
-        '''
+    '''
     if isinstance(b, str):
         if len(a) > len(b):
             return False
@@ -24,7 +26,7 @@ def is_prefix(a: List[str], b: Union[str, List[str]]) -> bool:
         raise TypeError()
 
 
-def equals(a: List[str], b: Union[str, List[str]]) -> bool:
+def equals(a: List[str], b: Union[str, List[str], List[List[str]]]) -> bool:
     '''
     :param a: List[str], List[char] actually
     :param b: str or list of str (it actually supports recursion)
@@ -39,3 +41,15 @@ def equals(a: List[str], b: Union[str, List[str]]) -> bool:
         return False
     else:
         raise TypeError()
+
+
+def open_file(filename):
+    if filename == 'stdin':
+        return sys.stdin
+    # filename = os.path.realpath(filename)
+    if os.path.isfile(filename):
+        return open(filename, 'r')
+    elif os.path.isdir(filename):
+        return [os.path.join(filename, x) for x in os.listdir(filename)]
+    else:
+        return None

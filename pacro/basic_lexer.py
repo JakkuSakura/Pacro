@@ -3,7 +3,7 @@ from typing import List
 from lexer_token import Token, Tokens
 from lexer_config import *
 import token_types
-from tools import is_prefix, equals
+from utils import is_prefix, equals
 
 
 class BasicLexer:
@@ -63,20 +63,18 @@ class BasicLexer:
 
 def main(mute=False):
     lexer = BasicLexer()
-    lexer.replace_buffer('''//% Lang: Python
+    tokens = lexer.do_lexer('''//% Lang: Python
 //$ for i in range(10):
 //$     code(f"int foo_{i}()"+"{}")
 //$ 
 int main() {
 
 }''')
-    lexer.do_lexer()
     if not mute:
-        tokens = lexer.get_tokens()
         while token := tokens.pop_token():
             print(token)
 
-    return lexer.take_tokens()
+    return tokens
 
 
 if __name__ == '__main__':

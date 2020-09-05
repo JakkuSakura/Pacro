@@ -1,9 +1,7 @@
 //% Lang: Python
-//% Hash: ABCDEFG
-//$ code("int foo(){}");
-//######################
-int foo(){};
-//^^^^^^^^^^^^^^^^^^^^^^
+//$ for i in range(10):
+//$     code(f"int foo_{i}()"+"{}")
+//$
 int main() {
 
 }
