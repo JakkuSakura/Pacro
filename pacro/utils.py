@@ -1,9 +1,9 @@
 import os
 import sys
-from typing import Union, List
+from typing import List, Any
 
 
-def is_prefix(a: List[str], b: Union[str, List[str], List[List[str]]]) -> bool:
+def is_prefix(a: List[str], b: Any) -> bool:
     '''
         :param a: List[str], List[char] actually
         :param b: str or list of str (it actually supports recursion)
@@ -26,7 +26,7 @@ def is_prefix(a: List[str], b: Union[str, List[str], List[List[str]]]) -> bool:
         raise TypeError()
 
 
-def equals(a: List[str], b: Union[str, List[str], List[List[str]]]) -> bool:
+def equals(a: List[str], b: Any) -> bool:
     '''
     :param a: List[str], List[char] actually
     :param b: str or list of str (it actually supports recursion)

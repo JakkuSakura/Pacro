@@ -1,7 +1,7 @@
 from typing import List
 
 from lexer_token import Token, Tokens
-from lexer_config import *
+from lexer_config import config_comment, code_comment, newline
 import token_types
 from utils import is_prefix, equals
 
