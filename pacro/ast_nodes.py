@@ -1,6 +1,6 @@
 from typing import List
 
-from basic_token import Token
+from lexer_token import Token
 
 
 class AstNode:

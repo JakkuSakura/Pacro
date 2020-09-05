@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from ast_nodes import *
+from ast_nodes import ConfigBlockNode, CodeBlockNode, TextBlockNode, AstNode
 import basic_parser
 
 
@@ -43,7 +43,7 @@ class BasicInterpreter:
             elif isinstance(node, TextBlockNode):
                 code_output(node.to_string())
             else:
-                raise Exception("Interpret error")
+                raise Exception("Interpret error " + str(node))
 
 
 def main():

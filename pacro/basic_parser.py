@@ -3,7 +3,7 @@ from typing import List, Optional
 import basic_lexer
 import token_types
 from ast_nodes import AstNode, LineNode, CodeBlockNode, ConfigBlockNode, TextBlockNode
-from basic_token import Tokens, Token
+from lexer_token import Tokens, Token
 
 
 class BasicParser:

@@ -1,6 +1,6 @@
 from typing import List
 
-from basic_token import Token, Tokens
+from lexer_token import Token, Tokens
 from lexer_config import *
 import token_types
 from tools import is_prefix, equals
@@ -14,7 +14,7 @@ class BasicLexer:
         self.col = 1
         self.row = 1
 
-    def process(self, ch: str):
+    def process_char(self, ch: str):
         if ch == '\n':
             self.col = 1
             self.row += 1
@@ -28,7 +28,7 @@ class BasicLexer:
         self.col = 0
         self.row = 1
 
-    def replace(self, s: str):
+    def replace_buffer(self, s: str):
         self.reset()
         self.buf.extend(s)
 
@@ -60,7 +60,7 @@ class BasicLexer:
                 self.new_token(type=token_types.char, content=ch)
                 temp_buf.clear()
 
-            self.process(ch)
+            self.process_char(ch)
 
     def get_tokens(self) -> Tokens:
         return self.tokens.clone()
@@ -73,8 +73,10 @@ class BasicLexer:
 
 def main(mute=False):
     lexer = BasicLexer()
-    lexer.replace('''//% Lang: Python
-//$ code("int foo(){}");
+    lexer.replace_buffer('''//% Lang: Python
+//$ for i in range(10):
+//$     code(f"int foo_{i}()"+"{}")
+//$ 
 int main() {
 
 }''')
