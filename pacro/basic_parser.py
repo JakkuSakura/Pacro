@@ -27,9 +27,20 @@ class BasicParser:
 
         return None
 
+    def parse_whitespace(self) -> bool:
+        if token := self.tokens.peek_token():
+            if token.type == token_types.char and token.content.isspace():
+                self.tokens.pop_token()
+                return True
+        return False
+
     def parse_config_block(self) -> Optional[ConfigBlockNode]:
         lines = []
-        while token := self.tokens.peek_token():
+        while self.tokens.peek_token():
+            while self.parse_whitespace():
+                pass
+
+            token = self.tokens.peek_token()
             if token.type == token_types.config_comment:
                 self.tokens.pop_token()
                 if newline := self.parse_line():
@@ -42,8 +53,16 @@ class BasicParser:
             return None
 
     def parse_code_block(self) -> Optional[CodeBlockNode]:
+        config_block = None
+        if config := self.parse_config_block():
+            config_block = config
+
         lines: List[LineNode] = []
-        while token := self.tokens.peek_token():
+        while self.tokens.peek_token():
+            while self.parse_whitespace():
+                pass
+
+            token = self.tokens.peek_token()
             if token.type == token_types.code_comment:
                 self.tokens.pop_token()
                 if newline := self.parse_line():
@@ -51,7 +70,7 @@ class BasicParser:
             else:
                 break
         if lines:
-            return CodeBlockNode(lines)
+            return CodeBlockNode(config_block, lines)
         else:
             return None
 
@@ -71,9 +90,9 @@ class BasicParser:
         root_node: List[AstNode] = []
         while self.tokens.peek_token():
             next_node: Optional[AstNode]
-            if next_node := self.parse_config_block():
+            if next_node := self.parse_code_block():
                 root_node.append(next_node)
-            elif next_node := self.parse_code_block():
+            elif next_node := self.parse_config_block():
                 root_node.append(next_node)
             elif next_node := self.parse_text_block():
                 root_node.append(next_node)

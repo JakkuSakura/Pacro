@@ -33,7 +33,7 @@ class Pacro:
                 f = open(file, 'w')
                 interpreter.set_code_output(lambda *args, **kwargs: code_output_file(f, *args, **kwargs))
         else:
-            NotImplemented()
+            raise NotImplementedError()
         interpreter.do_interpret(root)
 
     def process_input_files(self, input_files_names, depth=1):

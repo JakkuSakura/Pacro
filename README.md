@@ -35,8 +35,7 @@ char = *
 ```text
 
 config_block = [config_comment (line) ] +
-code_block = [code_comment (line) ] +
-
+code_block = config_block? [whitespace * code_comment (line) ] +
 line = char * newline
 text_block = line +
 

@@ -9,19 +9,21 @@ def get_args():
                                                                'project root directory | single file | '
                                                                'multiple files.', default=['stdin'])
     arg_parser.add_argument('-o', '--output', type=str,
-                            help='The type you want to output the result: '
+                            help='the type you want to output the result: '
                                  'stdout (default) | overwrite | filename | path ',
                             default='stdout')
 
-    arg_parser.add_argument('-v', '--verbose', nargs='?',
-                            help='The type you want to output the result: '
-                                 'stdout (default) | filename | path ')
+    arg_parser.add_argument('-v', '--verbose', help='detailed output', action='store_true')
 
     return arg_parser.parse_args()
 
 
 def main():
-    Pacro(get_args(), verbose=True).run()
+    args = get_args()
+    print(args)
+    args.verbose = True
+
+    Pacro(get_args()).run()
 
 
 if __name__ == '__main__':

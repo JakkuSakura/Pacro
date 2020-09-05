@@ -25,30 +25,24 @@ class BasicInterpreter:
     def set_code_output(self, code_output_fn):
         self.code_output = code_output_fn
 
-    def execute_code_block(self, code_block: CodeBlockNode, config_block: Optional[ConfigBlockNode] = None):
+    def execute_code_block(self, code_block: CodeBlockNode):
         code = code_block.to_string()
-
+        config_block = code_block.config
         if not config_block or config_block['Lang'] == 'Python':
             globals_parameters: Dict[Any, Any] = {'code': self.code_output}
             locals_parameters: Dict[Any, Any] = {}
             exec(code, globals_parameters, locals_parameters)
         else:
-            NotImplemented()
+            raise NotImplementedError()
 
     def do_interpret(self, root: List[AstNode]):
         index_iter = iter(range(len(root)))
         for i in index_iter:
             node = root[i]
             if isinstance(node, ConfigBlockNode):
-                if i < len(root):
-                    next_node = root[i + 1]
-                    if isinstance(next_node, CodeBlockNode):
-                        next(index_iter, None)
-                        self.execute_code_block(code_block=next_node, config_block=node)
-                    else:
-                        NotImplemented()
+                raise NotImplementedError()
             elif isinstance(node, CodeBlockNode):
-                self.execute_code_block(code_block=node, config_block=None)
+                self.execute_code_block(node)
             elif isinstance(node, TextBlockNode):
                 code_output_print(node.to_string())
             else:

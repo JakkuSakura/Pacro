@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from lexer_token import Token
 
@@ -27,18 +27,6 @@ class LineNode(AstNode):
         return 'LineNode(' + self.get_string() + ')'
 
 
-class CodeBlockNode(AstNode):
-    def __init__(self, lines: List[LineNode]):
-        super().__init__()
-        self.lines = lines
-
-    def to_string(self, newline='\n'):
-        return newline.join([x.get_string() for x in self.lines]) + newline
-
-    def __str__(self):
-        return 'TextBlockNode(' + self.to_string() + ')'
-
-
 class ConfigBlockNode(AstNode):
     def __init__(self, lines: List[LineNode]):
         super().__init__()
@@ -56,6 +44,19 @@ class ConfigBlockNode(AstNode):
 
     def __setitem__(self, key, value):
         self.config[key] = value
+
+
+class CodeBlockNode(AstNode):
+    def __init__(self, config: Optional[ConfigBlockNode], lines: List[LineNode]):
+        super().__init__()
+        self.config = config
+        self.lines = lines
+
+    def to_string(self, newline='\n'):
+        return newline.join([x.get_string() for x in self.lines]) + newline
+
+    def __str__(self):
+        return 'TextBlockNode(' + self.to_string() + ')'
 
 
 class TextBlockNode(AstNode):
