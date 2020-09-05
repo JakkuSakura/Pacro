@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from lexer_token import Token
+from utils import count_intent
 
 
 class AstNode:
@@ -51,6 +52,15 @@ class CodeBlockNode(AstNode):
         super().__init__()
         self.config = config
         self.lines = lines
+        self.trim_left()
+
+    def trim_left(self):
+        indent = 1e5
+        for line in self.lines:
+            indent = min(indent, count_intent(line.get_string()))
+
+        for line in self.lines:
+            line.chars = line.chars[indent:]
 
     def to_string(self, newline='\n'):
         return newline.join([x.get_string() for x in self.lines]) + newline

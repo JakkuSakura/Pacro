@@ -53,3 +53,10 @@ def open_file(filename):
         return [os.path.join(filename, x) for x in os.listdir(filename)]
     else:
         return None
+
+
+def count_intent(line: str):
+    for i in range(len(line)):
+        if not line[i].isspace():
+            return i
+    return len(line)
