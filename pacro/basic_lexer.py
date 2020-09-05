@@ -42,7 +42,7 @@ class Buffer:
 
     def match_forward(self, pat: Any) -> Optional[str]:
         if s := self.match(pat):
-            self.ptr += len(pat)
+            self.ptr += len(s)
             return s
 
         return None
