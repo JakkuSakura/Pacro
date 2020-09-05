@@ -25,24 +25,29 @@ def open_file(filename):
     elif os.path.isdir(filename):
         return os.listdir(filename)
     else:
-        raise FileNotFoundError(filename)
+        return None
 
 
-def process_single_file(filename):
+def process_single_file(file):
     lexer = BasicLexer()
-    lexer.replace_buffer(filename)
-    tokens = lexer.take_tokens()
+    tokens = lexer.do_lexer(file.read())
+
     parser = BasicParser()
-    root = parser.set_tokens(tokens)
+    root = parser.do_parse(tokens)
+
+    interpreter = BasicInterpreter()
+    interpreter.do_interpret(root)
 
 
-def process_input_files(input_files):
+def process_input_files(input_files, depth=1):
     for input_file in input_files:
-        files = open_file(input_file)
-        if isinstance(files, list):
-            process_input_files(files)
-        else:
-            process_single_file(files)
+        if files := open_file(input_file):
+            if isinstance(files, list):
+                process_input_files(files, depth=depth + 1)
+            else:
+                process_single_file(files)
+        elif depth == 1:
+            raise FileNotFoundError(input_file)
 
 
 def main():

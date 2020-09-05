@@ -8,8 +8,6 @@ from tools import is_prefix, equals
 
 class BasicLexer:
     def __init__(self):
-        self.buf: List[str] = []
-        # self.buf_ptr: int = 0
         self.tokens = Tokens()
         self.col = 1
         self.row = 1
@@ -22,28 +20,21 @@ class BasicLexer:
             self.col += 1
 
     def reset(self):
-        self.buf.clear()
         # self.buf_ptr = 0
         self.tokens.clear()
         self.col = 0
         self.row = 1
 
-    def replace_buffer(self, s: str):
-        self.reset()
-        self.buf.extend(s)
-
-    def push(self, s: str):
-        self.buf.extend(s)
-
     # noinspection PyShadowingBuiltins
     def new_token(self, type: str, content):
         self.tokens.append(Token(row=self.row, col=self.col, type=type, content=content))
 
-    def do_lexer(self):
+    def do_lexer(self, buf: List[str]):
         assert self.tokens.is_empty(), "You should not call do_lexer() twice on the same lexer object"
+        self.reset()
 
         temp_buf = []
-        for ch in self.buf:
+        for ch in buf:
             temp_buf.append(ch)
             if is_prefix(temp_buf, [config_comment, code_comment, newline]):
                 if equals(temp_buf, config_comment):
@@ -62,8 +53,7 @@ class BasicLexer:
 
             self.process_char(ch)
 
-    def get_tokens(self) -> Tokens:
-        return self.tokens.clone()
+        return self.take_tokens()
 
     def take_tokens(self) -> Tokens:
         t = self.tokens

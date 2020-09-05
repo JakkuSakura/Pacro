@@ -65,7 +65,9 @@ class BasicParser:
         else:
             return None
 
-    def do_parse(self) -> List[AstNode]:
+    def do_parse(self, tokens: Optional[Tokens] = None) -> List[AstNode]:
+        if tokens:
+            self.set_tokens(tokens)
         root_node: List[AstNode] = []
         while self.tokens.peek_token():
             next_node: Optional[AstNode]
