@@ -21,8 +21,6 @@ def get_args():
 def main():
     args = get_args()
     print(args)
-    args.verbose = True
-
     Pacro(get_args()).run()
 
 

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import basic_lexer
 import token_types
-from ast_nodes import AstNode, LineNode, CodeBlockNode, ConfigBlockNode, TextBlockNode
+from ast_nodes import AstNode, LineNode, CodeBlockNode, ConfigBlockNode, TextBlockNode, GeneratedCodeNode
 from lexer_token import Tokens, Token
 
 
@@ -16,11 +16,15 @@ class BasicParser:
 
     def parse_line(self) -> Optional[LineNode]:
         chars: List[Token] = []
-        while token := self.tokens.pop_token():
+        while token := self.tokens.peek_token():
             if token.type == token_types.newline:
+                self.tokens.pop_token()
                 return LineNode(chars)
-            chars.append(token)
-
+            elif token.type == token_types.char:
+                self.tokens.pop_token()
+                chars.append(token)
+            else:
+                break
         # EOF
         if chars:
             return LineNode(chars)
@@ -32,9 +36,14 @@ class BasicParser:
             if token.type == token_types.char and token.content.isspace():
                 self.tokens.pop_token()
                 return True
+            elif token.type == token_types.newline:
+                self.tokens.pop_token()
+                return True
         return False
 
     def parse_config_block(self) -> Optional[ConfigBlockNode]:
+        token_ptr = self.tokens.get_pos()
+
         lines = []
         while self.tokens.peek_token():
             while self.parse_whitespace():
@@ -50,13 +59,28 @@ class BasicParser:
         if lines:
             return ConfigBlockNode(lines)
         else:
+            self.tokens.set_pos(token_ptr)
             return None
 
-    def parse_code_block(self) -> Optional[CodeBlockNode]:
-        config_block = None
-        if config := self.parse_config_block():
-            config_block = config
+    def parse_generated_code_block(self) -> Optional[GeneratedCodeNode]:
+        token_ptr = self.tokens.get_pos()
 
+        lines = []
+        while line := self.parse_line():
+            lines.append(line)
+
+        if tk := self.tokens.peek_token():
+            if tk.type == token_types.generated_code_comment:
+                self.tokens.pop_token()
+                line = self.parse_line()
+                return GeneratedCodeNode(lines, line)
+
+        self.tokens.set_pos(token_ptr)
+        return None
+
+    def parse_code_block(self) -> Optional[CodeBlockNode]:
+        token_ptr = self.tokens.get_pos()
+        config_block = self.parse_config_block()
         lines: List[LineNode] = []
         while self.tokens.peek_token():
             while self.parse_whitespace():
@@ -69,9 +93,12 @@ class BasicParser:
                     lines.append(newline)
             else:
                 break
+
         if lines:
-            return CodeBlockNode(config_block, lines)
+            generated_code = self.parse_generated_code_block()
+            return CodeBlockNode(config_block, lines, generated_code)
         else:
+            self.tokens.set_pos(token_ptr)
             return None
 
     def parse_text_block(self) -> Optional[TextBlockNode]:

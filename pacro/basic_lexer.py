@@ -2,7 +2,7 @@ from typing import List
 
 from buffer import Buffer
 from lexer_token import Token, Tokens
-from lexer_config import config_comment, code_comment, newline
+from lexer_config import config_comment, code_comment, newline, generated_code_comment
 import token_types
 
 
@@ -49,6 +49,8 @@ class BasicLexer:
                 self.new_token(type=token_types.config_comment, content=matched)
             elif matched := buf.match_forward(code_comment):
                 self.new_token(type=token_types.code_comment, content=matched)
+            elif matched := buf.match_forward(generated_code_comment):
+                self.new_token(type=token_types.generated_code_comment, content=matched)
             elif matched := buf.match_forward(newline):
                 self.new_token(type=token_types.newline, content=matched)
             else:

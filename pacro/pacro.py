@@ -18,8 +18,6 @@ class Pacro:
     def process_single_file(self, file):
         lexer = BasicLexer()
         tokens = lexer.do_lexer(file.read())
-        for tk in tokens.tokens:
-            print(tk)
         parser = BasicParser()
         root = parser.do_parse(tokens)
 

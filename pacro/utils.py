@@ -1,6 +1,8 @@
+import hashlib
 import os
 import sys
 from typing import List, Any
+
 
 
 def is_prefix(a: List[str], b: Any) -> bool:
@@ -60,3 +62,12 @@ def count_intent(line: str):
         if not line[i].isspace():
             return i
     return len(line)
+
+
+def white_hash(s: str, number_of_digits=6) -> str:
+    h = hashlib.new('ripemd160')
+    for x in s:
+        if not x.isspace():
+            h.update(x.encode('utf-8'))
+    return h.hexdigest()[:number_of_digits]
+

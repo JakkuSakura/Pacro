@@ -3,11 +3,11 @@ from typing import Optional
 
 
 class Token:
-    def __init__(self, *args, **kwargs):
-        self.row = kwargs['row']
-        self.col = kwargs['col']
-        self.type = kwargs['type']
-        self.content = kwargs['content']
+    def __init__(self, row, col, type, content):
+        self.row = row
+        self.col = col
+        self.type = type
+        self.content = content
 
     def __str__(self):
         content = self.content.encode('unicode_escape').decode('utf-8')
@@ -53,3 +53,9 @@ class Tokens:
 
     def is_empty(self) -> bool:
         return len(self.tokens) == 0
+
+    def get_pos(self) -> int:
+        return self.token_ptr
+
+    def set_pos(self, pos: int):
+        self.token_ptr = pos

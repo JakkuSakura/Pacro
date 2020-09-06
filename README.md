@@ -26,7 +26,7 @@ int main() {
 ```text
 config_comment = '//%'
 code_comment = '//$'
-
+generated_code_comment = '//#'
 newline = ['\r\n', '\n']
 char = *
 ```
@@ -35,7 +35,8 @@ char = *
 ```text
 
 config_block = [config_comment (line) ] +
-code_block = config_block? [whitespace * code_comment (line) ] +
+code_block = config_block? [whitespace * code_comment (line) ] + generated_code_comment?
+generated_code_comment = '//#' end: HASH
 line = char * newline
 text_block = line +
 
