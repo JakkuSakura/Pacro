@@ -38,10 +38,10 @@ class BasicLexer:
     def new_token(self, type: str, content):
         self.tokens.append(Token(row=self.saved_row, col=self.saved_col, type=type, content=content))
 
-    def do_lexer(self, buf: List[str]):
+    def do_lexer(self, buf_: str):
         assert self.tokens.is_empty(), "You should not call do_lexer() twice on the same lexer object"
         self.reset()
-        buf = Buffer(buf)
+        buf = Buffer(buf_)
 
         while buf.peek_char():
             self.save_pos()
@@ -57,6 +57,7 @@ class BasicLexer:
                 matched = buf.pop_char()
                 self.new_token(type=token_types.char, content=matched)
 
+            assert matched is not None
             self.process_char(matched)
 
         return self.take_tokens()

@@ -12,7 +12,7 @@ class Formatter:
         s = ''.join(self.buf)
         return s
 
-    def clear(self) -> str:
+    def clear(self):
         self.buf.clear()
 
 

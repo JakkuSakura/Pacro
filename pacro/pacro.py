@@ -2,7 +2,7 @@ from basic_interpreter import BasicInterpreter
 from basic_lexer import BasicLexer
 from basic_parser import BasicParser
 from input_stream import InputStream, StdinStream, FileInputStream
-from output_stream import StdoutStream, FileOutputStream
+from output_stream import StdoutStream, FileOutputStream, OutputStream
 from utils import open_file
 
 
@@ -35,6 +35,7 @@ class Pacro:
         root = parser.do_parse(tokens)
 
         interpreter = BasicInterpreter()
+        output: OutputStream
         if self.args.overwrite:
             assert isinstance(file, FileInputStream), 'Input should be files if you use --overwrite'
 

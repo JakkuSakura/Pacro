@@ -31,11 +31,22 @@ class LineNode(AstNode):
         return 'LineNode(' + self.to_string() + ')'
 
 
+def trim_left(lines: List[LineNode]):
+    indent = int(1e5)
+    for line in lines:
+        s = line.to_string()
+        if s.strip():
+            indent = min(indent, count_indent(line.to_string()))
+
+    for line in lines:
+        line.chars = line.chars[indent:]
+
+
 class ConfigBlockNode(AstNode):
     def __init__(self, lines: List[LineNode]):
         super().__init__()
         self.lines = lines
-        utils.trim_left(self.lines)
+        trim_left(self.lines)
         self.config = {}
         for line in lines:
             key, value = line.to_string().split(':')
@@ -58,11 +69,15 @@ class GeneratedCodeNode(AstNode):
     def __init__(self, lines: List[LineNode], comment: Optional[LineNode]):
         super().__init__()
         self.lines = lines
-        utils.trim_left(self.lines)
+        trim_left(self.lines)
+        self.hash = None
         try:
-            self.hash = comment.to_string().split(':')[1].strip()
+            if comment:
+                line = comment.to_string()
+                if line:
+                    self.hash = line.split(':')[1].strip()
         except:
-            self.hash = None
+            pass
 
     def to_string(self, *args, **kwargs):
         return utils.lines_to_string(self.lines, *args, **kwargs)
@@ -78,7 +93,7 @@ class CodeBlockNode(AstNode):
         self.config = config
         self.lines = lines
         self.indent = indent
-        utils.trim_left(self.lines)
+        trim_left(self.lines)
         self.generated_code = generated_code
 
     def to_string(self, *args, **kwargs):

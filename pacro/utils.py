@@ -1,7 +1,7 @@
 import hashlib
 import os
 import sys
-from typing import List, Any, Union
+from typing import List, Any, Union, Sequence
 
 from input_stream import InputStream, FileInputStream
 
@@ -71,20 +71,7 @@ def white_hash(s: str, number_of_digits=6) -> str:
     return h.hexdigest()[:number_of_digits]
 
 
-# noinspection PyUnresolvedReferences
-def trim_left(lines: List['LineNode']):
-    indent = 1e5
-    for line in lines:
-        s = line.to_string()
-        if s.strip():
-            indent = min(indent, count_indent(line.to_string()))
-
-    for line in lines:
-        line.chars = line.chars[indent:]
-
-
-# noinspection PyUnresolvedReferences
-def lines_to_string(lines: List[Union[str, 'LineNode']], prefix='', indent='', end_of_line='\n') -> str:
+def lines_to_string(lines: Sequence[Any], prefix='', indent='', end_of_line='\n') -> str:
     buf = []
     for line in lines:
         if not line:
@@ -109,4 +96,4 @@ def lines_to_string(lines: List[Union[str, 'LineNode']], prefix='', indent='', e
 
     return ''.join(buf)
 
-# TODO formatter
+
