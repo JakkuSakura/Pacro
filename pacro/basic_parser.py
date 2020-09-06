@@ -79,26 +79,29 @@ class BasicParser:
         return None
 
     def parse_code_block(self) -> Optional[CodeBlockNode]:
-        token_ptr = self.tokens.get_pos()
         config_block = self.parse_config_block()
         lines: List[LineNode] = []
+        indent = None
         while self.tokens.peek_token():
+            token_ptr = self.tokens.get_pos()
             while self.parse_whitespace():
                 pass
 
             token = self.tokens.peek_token()
             if token.type == token_types.code_comment:
+                if indent is None:
+                    indent = token.col - 1
                 self.tokens.pop_token()
                 if newline := self.parse_line():
                     lines.append(newline)
             else:
+                self.tokens.set_pos(token_ptr)
                 break
 
         if lines:
             generated_code = self.parse_generated_code_block()
-            return CodeBlockNode(config_block, lines, generated_code)
+            return CodeBlockNode(config_block, lines, generated_code, indent or 0)
         else:
-            self.tokens.set_pos(token_ptr)
             return None
 
     def parse_text_block(self) -> Optional[TextBlockNode]:

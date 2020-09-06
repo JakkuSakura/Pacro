@@ -1,8 +1,9 @@
 import hashlib
 import os
 import sys
-from typing import List, Any
+from typing import List, Any, Union
 
+from input_stream import InputStream, FileInputStream
 
 
 def is_prefix(a: List[str], b: Any) -> bool:
@@ -45,19 +46,17 @@ def equals(a: List[str], b: Any) -> bool:
         raise TypeError()
 
 
-def open_file(filename):
-    if filename == 'stdin':
-        return sys.stdin
+def open_file(filename) -> Union[InputStream, List[str], None]:
     # filename = os.path.realpath(filename)
     if os.path.isfile(filename):
-        return open(filename, 'r')
+        return FileInputStream(filename)
     elif os.path.isdir(filename):
         return [os.path.join(filename, x) for x in os.listdir(filename)]
     else:
         return None
 
 
-def count_intent(line: str):
+def count_indent(line: str):
     for i in range(len(line)):
         if not line[i].isspace():
             return i
@@ -65,9 +64,49 @@ def count_intent(line: str):
 
 
 def white_hash(s: str, number_of_digits=6) -> str:
-    h = hashlib.new('ripemd160')
+    h = hashlib.new('md5')
     for x in s:
         if not x.isspace():
             h.update(x.encode('utf-8'))
     return h.hexdigest()[:number_of_digits]
 
+
+# noinspection PyUnresolvedReferences
+def trim_left(lines: List['LineNode']):
+    indent = 1e5
+    for line in lines:
+        s = line.to_string()
+        if s.strip():
+            indent = min(indent, count_indent(line.to_string()))
+
+    for line in lines:
+        line.chars = line.chars[indent:]
+
+
+# noinspection PyUnresolvedReferences
+def lines_to_string(lines: List[Union[str, 'LineNode']], prefix='', indent='', end_of_line='\n') -> str:
+    buf = []
+    for line in lines:
+        if not line:
+            continue
+        if isinstance(line, str):
+            if not line.strip():
+                continue
+
+        if isinstance(indent, str):
+            buf.append(indent)
+        elif isinstance(indent, int):
+            buf.append(' ' * indent)
+        else:
+            buf.append(str(indent))
+
+        buf.append(prefix)
+        if isinstance(line, str):
+            buf.append(line)
+            buf.append(end_of_line)
+        else:
+            buf.append(line.to_string(end_of_line))
+
+    return ''.join(buf)
+
+# TODO formatter

@@ -1,41 +1,60 @@
-from basic_interpreter import BasicInterpreter, code_output_print, code_output_file
+from basic_interpreter import BasicInterpreter
 from basic_lexer import BasicLexer
 from basic_parser import BasicParser
+from input_stream import InputStream, StdinStream, FileInputStream
+from output_stream import StdoutStream, FileOutputStream
 from utils import open_file
+
+
+class ArgumentException(Exception):
+    def __init__(self, message):
+        super(ArgumentException, self).__init__(message)
+
+
+def check_args(args):
+    if args.output != 'stdout' and args.overwrite:
+        raise ArgumentException("Argument conflicts: output and overwrite cannot be both set")
+    if args.files == 'stdin' and args.overwrite:
+        raise ArgumentException('Input should be files if you use --overwrite')
 
 
 class Pacro:
     def __init__(self, args):
         if args.verbose:
             print(args)
-        self.output_types = args.output
-        self.input_files = args.files
-        self.verbose = args.verbose
+        check_args(args)
+        self.args = args
 
     def run(self):
-        self.process_input_files(self.input_files)
+        self.process_input_files(self.args.files)
 
-    def process_single_file(self, file):
+    def process_single_file(self, file: InputStream):
         lexer = BasicLexer()
         tokens = lexer.do_lexer(file.read())
         parser = BasicParser()
         root = parser.do_parse(tokens)
 
         interpreter = BasicInterpreter()
-        if isinstance(self.output_types, str):
-            if self.output_types == 'stdout':
-                interpreter.set_code_output(code_output_print)
-            elif self.output_types == 'overwrite':
-                file.seek(0)
-                interpreter.set_code_output(lambda *args, **kwargs: code_output_file(file, *args, **kwargs))
+        if self.args.overwrite:
+            assert isinstance(file, FileInputStream), 'Input should be files if you use --overwrite'
+
+            file.close()
+            output = FileOutputStream(file.filename)
+        elif isinstance(self.args.output, str):
+            if self.args.output_types == 'stdout':
+                output = StdoutStream()
             else:
-                f = open(file, 'w')
-                interpreter.set_code_output(lambda *args, **kwargs: code_output_file(f, *args, **kwargs))
+                output = FileOutputStream(self.args.output)
         else:
             raise NotImplementedError()
+        interpreter.set_code_output(output)
         interpreter.do_interpret(root)
 
     def process_input_files(self, input_files_names, depth=1):
+        if input_files_names == 'stdin':
+            self.process_single_file(StdinStream())
+            return
+
         if not isinstance(input_files_names, list):
             input_files_names = [input_files_names]
 
@@ -44,7 +63,7 @@ class Pacro:
                 if isinstance(file, list):
                     self.process_input_files(file, depth=depth + 1)
                 else:
-                    if self.output_types == 'stdout' and depth >= 2:
+                    if self.args.verbose or self.args.output == 'stdout' and depth >= 2:
                         print("File:", input_file)
                     self.process_single_file(file)
             elif depth == 1:
