@@ -1,4 +1,3 @@
-    //% Lang: Python
     //$ for i in range(10):
     //$     code(f"int foo_{i}()"+"{}\n")
     int foo_0(){}
@@ -11,59 +10,14 @@
     int foo_7(){}
     int foo_8(){}
     int foo_9(){}
-    //# end: 49c00b
-
-    
+    //# end: 86f84a
     /*$
+
         code('')
+
     $*/
+
 int main() {
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

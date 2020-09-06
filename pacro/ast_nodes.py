@@ -109,7 +109,7 @@ class TextBlockNode(AstNode):
         self.lines = lines
 
     def to_string(self):
-        return utils.lines_to_string(self.lines)
+        return utils.lines_to_string([x.to_string() for x in self.lines])
 
     def __str__(self):
         return 'TextBlockNode(' + self.to_string() + ')'
