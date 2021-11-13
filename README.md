@@ -1,49 +1,8 @@
 # Pacro
-Powerful embedded macro implemented in Python for all languages.
+Pacro aims to be a language agnostic preprocess tool. Based on jinja2.
+Just like Kconfig in linux kernel code
 
-## Example
-```c++
-//% Lang: Python
-//$ code("int foo(){}");
-int main() {
-
-}
-```
-it will convert to 
-```c++
-//% Lang: Python
-//% Hash: ABCDEFG
-//$ code("int foo(){}");
-//######################
-int foo(){};
-//^^^^^^^^^^^^^^^^^^^^^^
-int main() {
-
-}
-```
-
-## Lexer
-```text
-config_comment = '//%'
-code_comment = '//$'
-generated_code_comment = '//#'
-newline = ['\r\n', '\n']
-char = *
-```
-
-## Parser
-```text
-
-config_block = [config_comment (line) ] +
-code_block = config_block? [whitespace * code_comment (line) ] + generated_code_comment?
-generated_code_comment = '//#' end: HASH
-line = char * newline
-text_block = line +
-
-
-```
-
-## TODO
-- [ ] Macro function call `macro_fun(example)` or `macro_fun!(example)`
-
-
+## Feature
+- [ ] Code generation
+- [ ] Features
+- [ ] Dirty macro

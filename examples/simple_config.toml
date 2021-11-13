@@ -1,0 +1,10 @@
+default = ["feature1"]
+feature1 = []
+
+feature2 = []
+feature3 = []
+
+exclusive-feature123 = ["feature1", "feature2", "feature3"]
+
+value-feature4 = ["int"]
+value-feature5 = ["str"]
