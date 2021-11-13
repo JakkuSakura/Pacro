@@ -20,7 +20,7 @@ def main():
     content = Path(file).read_text()
     config = toml.loads(content)
     feature_set = FeatureSet.parse_obj(config)
-    selected = display(compile_feature_set(feature_set))
+    display(compile_feature_set(feature_set))
 
 
 if __name__ == "__main__":

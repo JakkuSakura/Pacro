@@ -51,10 +51,9 @@ class FeatureList(View, layout=VerticalLayout, can_focus=True):
     name = 'feature list'
     selection = Reactive(None)
 
-    def __init__(self, feature_set: CompiledFeatureSet, out: ConfigSelection) -> None:
+    def __init__(self, feature_set: CompiledFeatureSet) -> None:
         super().__init__()
         self.feature_set = feature_set
-        self.out = out
         self.selection = None
 
         self.features = []
@@ -64,7 +63,7 @@ class FeatureList(View, layout=VerticalLayout, can_focus=True):
                 wg = CheckboxItem(
                     self,
                     label=feature.name,
-                    enabled=self.out.values.get(name),
+                    enabled=self.feature_set.values.get(name),
                     selected=False,
                     index=i
                 )
@@ -76,8 +75,9 @@ class FeatureList(View, layout=VerticalLayout, can_focus=True):
         return len(self.features)
 
     def handle_button_pressed(self, message: ButtonPressed) -> None:
-        message.sender.enabled ^= 1
-        self.out.values[message.sender.label] = message.sender.enabled
+        self.feature_set.set(message.sender.label, not message.sender.enabled)
+        for feature in self.features:
+            feature.enabled = self.feature_set.values[feature.label]
 
     def on_key(self, event: events.Key):
         if self.selection is None:
@@ -101,10 +101,9 @@ class FeatureList(View, layout=VerticalLayout, can_focus=True):
 
 
 class FeatureSelector(App):
-    def __init__(self, feature_set: CompiledFeatureSet, out: ConfigSelection, **kwargs):
+    def __init__(self, feature_set: CompiledFeatureSet, **kwargs):
         super().__init__(**kwargs)
         self.feature_set = feature_set
-        self.out = out
 
     async def on_load(self, event: events.Load) -> None:
         """Bind keys with the app loads (but before entering application mode)"""
@@ -115,8 +114,7 @@ class FeatureSelector(App):
     async def on_mount(self, event: events.Mount) -> None:
         """Create and dock the widgets."""
 
-        # A scrollview to contain the markdown file
-        fl = FeatureList(self.feature_set, self.out)
+        fl = FeatureList(self.feature_set)
 
         # Header / footer / dock
         await self.view.dock(Footer(), edge="bottom")
@@ -125,9 +123,5 @@ class FeatureSelector(App):
         await self.view.dock(fl, edge="right")
 
 
-def display(feature_set: CompiledFeatureSet) -> ConfigSelection:
-    result = ConfigSelection()
-    result.values = copy.deepcopy(feature_set.default)
-    FeatureSelector.run(title="Select features", feature_set=feature_set, out=result)
-
-    return result
+def display(feature_set: CompiledFeatureSet):
+    FeatureSelector.run(title="Select features", feature_set=feature_set)

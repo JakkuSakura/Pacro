@@ -1,3 +1,5 @@
+import copy
+
 from pydantic import BaseModel
 from typing import Any, Optional
 
@@ -50,11 +52,47 @@ class CompiledFeatureSet:
     features: list[Feature] = []
     rules: list[FeatureRule] = []
     default: dict[str, Any] = {}
+    values: dict[str, Any] = {}
 
     def find_feature(self, name) -> Optional[Feature]:
         for f in self.features:
             if f.name == name:
                 return f
+
+    def set(self, key: str, value: Any):
+        self.values[key] = value
+        if value is True:
+            for rule in self.get_related_rules(key):
+                for ex in rule.exclusive:
+                    if ex != key:
+                        self.values[ex] = False
+                for dep in rule.dependency:
+                    self.set(dep, True)
+
+    def get_related_rules(self, key: str):
+        rules = []
+        for rule in self.rules:
+            if key in rule.dependency:
+                rules.append(rule)
+                continue
+            if key in rule.exclusive:
+                rules.append(rule)
+                continue
+        return rules
+
+    def validate_all(self) -> bool:
+        for rule in self.rules:
+            if rule.exclusive:
+                count = 0
+                for ex in rule.exclusive:
+                    count += self.values.get(ex)
+                if count > 1:
+                    return False
+            if rule.dependency:
+                for dep in rule.dependency:
+                    if not self.values.get(dep):
+                        return False
+        return True
 
 
 def get_default_value(kind: str):
@@ -91,9 +129,5 @@ def compile_feature_set(feature_set: FeatureSet) -> CompiledFeatureSet:
             if name not in compiled.default:
                 compiled.default[name] = False
 
-
+    compiled.values = copy.copy(compiled.default)
     return compiled
-
-
-class ConfigSelection(BaseModel):
-    values: dict[str, Any] = {}
