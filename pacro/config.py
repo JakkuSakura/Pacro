@@ -54,7 +54,7 @@ class CompiledFeatureSet:
     default: dict[str, Any] = {}
     values: dict[str, Any] = {}
 
-    def find_feature(self, name) -> Optional[Feature]:
+    def get_feature(self, name) -> Optional[Feature]:
         for f in self.features:
             if f.name == name:
                 return f
@@ -72,6 +72,10 @@ class CompiledFeatureSet:
             for rule in self.get_related_rules(key):
                 if key in rule.dependency:
                     self.set(rule.name, False)
+
+            for dep in self.get_dependencies(key):
+                if not self.get_feature(dep):
+                    self.values[dep] = False
 
         self.values[key] = value
         self.validate_all()
