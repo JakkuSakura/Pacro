@@ -20,8 +20,13 @@ def main():
     content = Path(file).read_text()
     config = toml.loads(content)
     feature_set = FeatureSet.parse_obj(config)
-    display(compile_feature_set(feature_set))
+    compiled = compile_feature_set(feature_set)
+    display(compiled)
 
-
+    enabled = []
+    for key, value in compiled.values.items():
+        if value is True:
+            enabled.append(key)
+    print(','.join(enabled))
 if __name__ == "__main__":
     main()

@@ -1,10 +1,13 @@
-default = ["feature1"]
+default = ["feature1", "foo/bar"]
 feature1 = []
 
-feature2 = []
+feature2 = ["bar/baz"]
 feature3 = []
 
 exclusive-feature123 = ["feature1", "feature2", "feature3"]
 
 value-feature4 = ["int"]
 value-feature5 = ["str"]
+feature6 = ["feature7"]
+feature7 = ["feature8"]
+feature8 = ["feature9"]

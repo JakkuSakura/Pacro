@@ -60,25 +60,41 @@ class CompiledFeatureSet:
                 return f
 
     def set(self, key: str, value: Any):
-        self.values[key] = value
         if value is True:
             for rule in self.get_related_rules(key):
                 for ex in rule.exclusive:
                     if ex != key:
-                        self.values[ex] = False
-                for dep in rule.dependency:
-                    self.set(dep, True)
+                        self.set(ex, False)
+
+            for dep in self.get_dependencies(key):
+                self.set(dep, True)
+        elif value is False:
+            for rule in self.get_related_rules(key):
+                if key in rule.dependency:
+                    self.set(rule.name, False)
+
+        self.values[key] = value
+        self.validate_all()
 
     def get_related_rules(self, key: str):
         rules = []
         for rule in self.rules:
+            append = False
+            if key == rule.name:
+                append = True
             if key in rule.dependency:
-                rules.append(rule)
-                continue
+                append = True
             if key in rule.exclusive:
+                append = True
+            if append:
                 rules.append(rule)
-                continue
         return rules
+
+    def get_dependencies(self, key) -> list[str]:
+        for rule in self.rules:
+            if key == rule.name and rule.dependency:
+                return rule.dependency
+        return []
 
     def validate_all(self) -> bool:
         for rule in self.rules:
@@ -87,11 +103,12 @@ class CompiledFeatureSet:
                 for ex in rule.exclusive:
                     count += self.values.get(ex)
                 if count > 1:
-                    return False
+                    raise Exception("Exclusive rule violated: " + str(rule))
             if rule.dependency:
-                for dep in rule.dependency:
-                    if not self.values.get(dep):
-                        return False
+                if self.values[rule.name]:
+                    for dep in rule.dependency:
+                        if not self.values.get(dep):
+                            raise Exception("Dependent rule violated: " + str(rule))
         return True
 
 
@@ -109,10 +126,11 @@ def compile_feature_set(feature_set: FeatureSet) -> CompiledFeatureSet:
     compiled = CompiledFeatureSet()
     for name, feature in feature_set.items():
         if name == "default":
+            compiled.default[name] = True
             for f in feature:
                 compiled.default[f] = True
 
-        elif name.startswith("exclusive-"):
+        if name.startswith("exclusive-"):
             compiled.rules.append(FeatureRule(name=name, exclusive=feature))
         elif name.startswith("value-"):
             name = name[len("value-"):]
@@ -128,6 +146,9 @@ def compile_feature_set(feature_set: FeatureSet) -> CompiledFeatureSet:
             compiled.rules.append(FeatureRule(name=name, dependency=feature))
             if name not in compiled.default:
                 compiled.default[name] = False
+            for f in feature:
+                if f not in compiled.default:
+                    compiled.default[f] = False
 
     compiled.values = copy.copy(compiled.default)
     return compiled
