@@ -1,3 +1,4 @@
+[features]
 default = ["feature1", "foo/bar"]
 feature1 = []
 

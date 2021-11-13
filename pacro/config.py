@@ -111,7 +111,7 @@ class CompiledFeatureSet:
             if rule.dependency:
                 if self.values[rule.name]:
                     for dep in rule.dependency:
-                        if not self.values.get(dep):
+                        if self.get_feature(dep) and not self.values.get(dep):
                             raise Exception("Dependent rule violated: " + str(rule))
         return True
 
