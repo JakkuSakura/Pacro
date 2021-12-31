@@ -3,3 +3,4 @@ pydantic
 # pyyaml
 pytoml
 textual
+typedmodel
